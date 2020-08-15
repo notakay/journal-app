@@ -120,27 +120,22 @@ function getBlockStyle(block) {
     }
 }
 
-class StyleButton extends React.Component {
-    constructor() {
-        super();
-        this.onToggle = (e) => {
-            e.preventDefault();
-            this.props.onToggle(this.props.style);
-        };
+function StyleButton(props) {
+    function onToggle(e) {
+        e.preventDefault();
+        props.onToggle(props.style);
     }
 
-    render() {
-        let className = 'RichEditor-styleButton';
-        if (this.props.active) {
-            className += ' RichEditor-activeButton';
-        }
-
-        return (
-            <span className={className} onMouseDown={this.onToggle}>
-                {this.props.label}
-            </span>
-        );
+    let className = 'RichEditor-styleButton';
+    if (props.active) {
+        className += ' RichEditor-activeButton';
     }
+
+    return (
+        <span className={className} onMouseDown={onToggle}>
+            {props.label}
+        </span>
+    );
 }
 
 const BLOCK_TYPES = [
