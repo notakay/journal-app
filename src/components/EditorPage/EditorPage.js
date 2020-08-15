@@ -1,16 +1,32 @@
 import React from 'react';
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from 'draft-js';
+import { Editor, EditorState, RichUtils, getDefaultKeyBinding, convertToRaw, convertFromRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import './EditorPage.css';
-import './RichEditor.css'
+import './RichEditor.css';
+
+// TODO
+// - Switch to functional component
+// - Fix string ref error
 
 class EditorPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { editorState: EditorState.createEmpty() };
+
+        const content = window.localStorage.getItem('content');
+        if(content) {
+            this.state = { editorState: EditorState.createWithContent(
+                convertFromRaw(JSON.parse(content))
+            )};
+        } else {
+            this.state = { editorState: EditorState.createEmpty() }
+        }
 
         this.focus = () => this.refs.editor.focus();
-        this.onChange = (editorState) => this.setState({ editorState });
+        this.onChange = (editorState) => {
+            const contentState = editorState.getCurrentContent();
+            this.saveContent(contentState);
+            this.setState({ editorState })
+        };
 
         this.handleKeyCommand = this._handleKeyCommand.bind(this);
         this.mapKeyToEditorCommand = this._mapKeyToEditorCommand.bind(this);
@@ -60,6 +76,11 @@ class EditorPage extends React.Component {
         );
     }
 
+    saveContent(content) {
+        console.log('saving content');
+        window.localStorage.setItem('content', JSON.stringify(convertToRaw(content)));
+    }
+
     render() {
         const { editorState } = this.state;
 
@@ -94,7 +115,7 @@ class EditorPage extends React.Component {
                             handleKeyCommand={this.handleKeyCommand}
                             keyBindingFn={this.mapKeyToEditorCommand}
                             onChange={this.onChange}
-                            placeholder="Tell a story..."
+                            placeholder="What's up?"
                             ref="editor"
                             spellCheck={true}
                         />
