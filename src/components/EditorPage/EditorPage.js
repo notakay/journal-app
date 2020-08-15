@@ -1,12 +1,20 @@
 import React from 'react';
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding, convertToRaw } from 'draft-js';
+import { Editor, EditorState, RichUtils, getDefaultKeyBinding, convertToRaw, convertFromRaw } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import './EditorPage.css';
 import './RichEditor.css';
 
+// pass data through props in the future
+
 function EditorPage() {
+    let content = JSON.parse(window.localStorage.getItem('content'));
+
+    if (!content) {
+        content = convertToRaw(EditorState.createEmpty());
+    }
+
     const [editorState, setEditorState] = React.useState(
-        EditorState.createEmpty()
+        EditorState.createWithContent(convertFromRaw(content))
     );
 
     const editor = React.useRef(null);
@@ -27,7 +35,6 @@ function EditorPage() {
     function saveContent(editorState) {
         const contentState = editorState.getCurrentContent();
         window.localStorage.setItem('content', JSON.stringify(convertToRaw(contentState)));
-        console.log(window.localStorage.getItem('content'));
     }
 
     function handleKeyCommand(command, editorState) {
@@ -198,7 +205,5 @@ const InlineStyleControls = (props) => {
         </div>
     );
 };
-
-
 
 export default EditorPage;
