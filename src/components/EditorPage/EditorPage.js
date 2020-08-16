@@ -5,16 +5,19 @@ import './EditorPage.css';
 import './RichEditor.css';
 
 // pass data through props in the future
+// Save as first line
 
-function EditorPage() {
-    let content = JSON.parse(window.localStorage.getItem('content'));
+function EditorPage(props) {
 
-    if (!content) {
-        content = convertToRaw(EditorState.createEmpty());
+    let entry = JSON.parse(window.localStorage.getItem(props.entry))
+
+    if (!entry) {
+        entry = convertToRaw(EditorState.createEmpty().getCurrentContent());
+        console.log('init new state', JSON.stringify(entry));
     }
 
     const [editorState, setEditorState] = React.useState(
-        EditorState.createWithContent(convertFromRaw(content))
+        EditorState.createWithContent(convertFromRaw(entry))
     );
 
     const editor = React.useRef(null);
@@ -33,8 +36,13 @@ function EditorPage() {
     }
 
     function saveContent(editorState) {
-        const contentState = editorState.getCurrentContent();
-        window.localStorage.setItem('content', JSON.stringify(convertToRaw(contentState)));
+        if (editorState.getCurrentContent().hasText()) {
+            const contentState = editorState.getCurrentContent();
+            window.localStorage.setItem(props.entry, JSON.stringify(convertToRaw(contentState)));;
+            console.log('saving content');
+        } else {
+            window.localStorage.removeItem(props.entry);
+        }
     }
 
     function handleKeyCommand(command, editorState) {
