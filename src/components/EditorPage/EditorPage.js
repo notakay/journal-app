@@ -1,19 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import { Editor, EditorState } from "draft-js";
+import { Editor } from "draft-js";
 import "draft-js/dist/Draft.css";
 
-export default function MyEditor() {
-	const [editorState, setEditorState] = React.useState(() =>
-		EditorState.createEmpty()
-	);
-
+export default function MyEditor({ editorState, onChange }) {
 	return (
 		<div>
-			<button onClick={() => setEditorState(EditorState.createEmpty())}>
-				New
-			</button>
-			<Editor editorState={editorState} onChange={setEditorState} />
+			<Editor editorState={editorState} onChange={onChange} />
 		</div>
 	);
 }
