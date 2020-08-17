@@ -13,7 +13,6 @@ function EditorPage(props) {
 
     if (!entry) {
         entry = convertToRaw(EditorState.createEmpty().getCurrentContent());
-        console.log('init new state', JSON.stringify(entry));
     }
 
     const [editorState, setEditorState] = React.useState(
@@ -39,7 +38,6 @@ function EditorPage(props) {
         if (editorState.getCurrentContent().hasText()) {
             const contentState = editorState.getCurrentContent();
             window.localStorage.setItem(props.entry, JSON.stringify(convertToRaw(contentState)));;
-            console.log('saving content');
         } else {
             window.localStorage.removeItem(props.entry);
         }

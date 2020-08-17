@@ -4,21 +4,43 @@ import './App.css';
 import EditorPage from '../EditorPage/EditorPage'
 
 function App() {
-  const keys = [];
   const localStorage = window.localStorage;
-  for (let i = 0; i < localStorage.length - 1; ++i) {
-    keys.push(localStorage.key(i));
+  const [keys, setKeys] = React.useState([]);
+  const [currentPage, setCurrentPage] = React.useState(localStorage.key(localStorage.length - 1));
+
+  React.useEffect(
+    () => {
+      setKeys([]);  // flush
+      for (let i = 0; i < localStorage.length; ++i) {
+        setKeys(arr => arr.concat(localStorage.key(i)));
+      }
+    },
+    []
+  );
+
+  function onClick() {
+    let newData = null;
+    setCurrentPage(newData);
   }
-  // Sidebars that takes us to editors??
-  // ned to work on saving
 
   return (
     <div className="App">
       {
         (localStorage.length > 0) ?
-          <EditorPage entry={localStorage.key(localStorage.length - 1)} /> :
+          keys.filter((key) => (key !== currentPage)).map((key) => <p key={key}>{key}</p>) :
+          <p>nothing here yet</p>
+      }
+      {
+        (currentPage) ?
+          <EditorPage entry={currentPage} /> :
           <EditorPage entry={Date.parse(new Date())} />
       }
+      {
+        (currentPage) ?
+          <h1>not null</h1> :
+          <h1>is null</h1>
+      }
+      <button onClick={onClick}>new</button>
     </div>
   );
 }
