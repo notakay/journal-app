@@ -1,21 +1,45 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
-import MyEditor from "../EditorPage/EditorPage";
-import { EditorState } from "draft-js";
+import EditorPage from "../EditorPage/EditorPage";
+import { EditorState, convertToRaw } from "draft-js";
 
-const App = () => {
-	const [editorState, setEditorState] = useState(() =>
-		EditorState.createEmpty()
-	);
+function App() {
+  const [editorState, setEditorState] = React.useState(() =>
+    EditorState.createEmpty()
+  );
 
-	return (
-		<div className="App">
-			<button onClick={() => setEditorState(EditorState.createEmpty())}>
-				News
+  const [entry, setEntry] = React.useState(() => Date.parse(new Date()));
+
+  function editorOnChange(editorState) {
+    saveContent(editorState)
+    setEditorState(editorState);
+  }
+
+  function saveContent(editorState) {
+    if (editorState.getCurrentContent().hasText()) {
+      const contentState = editorState.getCurrentContent();
+      window.localStorage.setItem(entry, JSON.stringify(convertToRaw(contentState)));;
+    } else {
+      window.localStorage.removeItem(entry);
+    }
+  }
+
+  function newEntry() {
+    setEntry(Date.parse(new Date()));
+    setEditorState(EditorState.createEmpty());
+    console.log(entry);
+  }
+
+  return (
+    <div className="App">
+      <EditorPage editorState={editorState} onChange={editorOnChange} />
+      <button
+        onClick={newEntry}
+      >
+        New entry
 			</button>
-			<MyEditor editorState={editorState} onChange={setEditorState} />
-		</div>
-	);
+    </div>
+  );
 };
 
 export default App;
